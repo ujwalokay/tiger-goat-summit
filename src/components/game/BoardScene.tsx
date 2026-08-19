@@ -1,5 +1,6 @@
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Environment, ContactShadows } from "@react-three/drei";
+import { OrbitControls, Environment, ContactShadows, Sky } from "@react-three/drei";
+import Scenery from "./Scenery";
 import { useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { SIZE, neighbors, rc, type Cell } from "@/lib/baghchal";
@@ -178,28 +179,34 @@ function Scene({ board, selected, targets, onNodeClick }: BoardSceneProps) {
 
 export default function BoardScene(props: BoardSceneProps) {
   return (
-    <Canvas shadows camera={{ position: [0, 6.2, 6.4], fov: 42 }} dpr={[1, 2]}>
-      <color attach="background" args={["#7fb3d5"]} />
-      <fog attach="fog" args={["#7fb3d5", 14, 26]} />
-      <ambientLight intensity={0.6} />
+    <Canvas shadows camera={{ position: [0, 5.4, 12.5], fov: 42 }} dpr={[1, 2]}>
+      <fog attach="fog" args={["#bcd9ef", 26, 55]} />
+      <ambientLight intensity={0.55} />
+      <hemisphereLight args={["#cfe8ff", "#4f7a35", 0.7]} />
       <directionalLight
-        position={[5, 8, 4]}
-        intensity={1.6}
+        position={[6, 10, 5]}
+        intensity={1.7}
         castShadow
-        shadow-mapSize={[1024, 1024]}
+        shadow-mapSize={[2048, 2048]}
+        shadow-camera-left={-14}
+        shadow-camera-right={14}
+        shadow-camera-top={14}
+        shadow-camera-bottom={-14}
       />
+      <Sky sunPosition={[6, 8, 5]} turbidity={4} rayleigh={0.6} />
       <Scene {...props} />
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
-        <circleGeometry args={[16, 48]} />
-        <meshStandardMaterial color="#4f8a3d" roughness={1} />
+        <circleGeometry args={[60, 64]} />
+        <meshStandardMaterial color="#5d9a45" roughness={1} />
       </mesh>
+      <Scenery />
       <Environment preset="park" />
       <OrbitControls
         enablePan={false}
-        minPolarAngle={0.25}
-        maxPolarAngle={Math.PI / 2.4}
-        minDistance={5}
-        maxDistance={12}
+        minPolarAngle={0.35}
+        maxPolarAngle={Math.PI / 2.15}
+        minDistance={7}
+        maxDistance={22}
       />
     </Canvas>
   );
