@@ -1,9 +1,10 @@
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Environment, ContactShadows, Sky } from "@react-three/drei";
 import Scenery from "./Scenery";
 import { useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { SIZE, neighbors, rc, type Cell } from "@/lib/baghchal";
+
 
 const SPACING = 1.15;
 
