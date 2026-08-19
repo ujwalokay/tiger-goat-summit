@@ -54,8 +54,8 @@ function Temple({
         <meshStandardMaterial color="#4a2c14" roughness={1} />
       </mesh>
       {/* lower roof */}
-      <mesh castShadow position={[0, 1.85, 0]}>
-        <coneGeometry args={[2.2, 0.8, 4]} rotation={[0, Math.PI / 4, 0]} />
+      <mesh castShadow position={[0, 1.85, 0]} rotation={[0, Math.PI / 4, 0]}>
+        <coneGeometry args={[2.2, 0.8, 4]} />
         <meshStandardMaterial color="#e2601a" roughness={0.8} flatShading />
       </mesh>
       {/* upper roof */}
