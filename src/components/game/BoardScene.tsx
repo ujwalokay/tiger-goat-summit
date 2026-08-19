@@ -291,9 +291,13 @@ function Scene({ board, selected, targets, onNodeClick }: BoardSceneProps) {
 
 export default function BoardScene(props: BoardSceneProps) {
   return (
-    <Canvas shadows camera={{ position: [0, 5.4, 12.5], fov: 42 }} dpr={[1, 2]}>
-      <fog attach="fog" args={["#bcd9ef", 26, 55]} />
-      <ambientLight intensity={0.55} />
+    <Canvas
+      shadows
+      gl={{ alpha: true }}
+      camera={{ position: [0, 5.4, 12.5], fov: 42 }}
+      dpr={[1, 2]}
+    >
+      <ambientLight intensity={0.6} />
       <hemisphereLight args={["#cfe8ff", "#4f7a35", 0.7]} />
       <directionalLight
         position={[6, 10, 5]}
@@ -305,14 +309,9 @@ export default function BoardScene(props: BoardSceneProps) {
         shadow-camera-top={14}
         shadow-camera-bottom={-14}
       />
-      <Sky sunPosition={[6, 8, 5]} turbidity={4} rayleigh={0.6} />
       <Scene {...props} />
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
-        <circleGeometry args={[60, 64]} />
-        <meshStandardMaterial color="#5d9a45" roughness={1} />
-      </mesh>
-      <Scenery />
       <Environment preset="park" />
+
       <OrbitControls
         enablePan={false}
         minPolarAngle={0.35}
