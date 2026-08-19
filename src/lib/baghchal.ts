@@ -16,7 +16,7 @@ export const TOTAL_GOATS = 20;
 export const idx = (r: number, c: number) => r * SIZE + c;
 export const rc = (i: number) => [Math.floor(i / SIZE), i % SIZE] as const;
 
-const DIRS = [
+const DIRS: Array<[number, number]> = [
   [-1, 0],
   [1, 0],
   [0, -1],
@@ -168,6 +168,6 @@ export function tigerAiMove(state: GameState): GameState | null {
   if (options.length === 0) return null;
   const captures = options.filter((o) => o.capture);
   const pool = captures.length ? captures : options;
-  const pick = pool[Math.floor(Math.random() * pool.length)];
+  const pick = pool[Math.floor(Math.random() * pool.length)]!;
   return movePiece(state, pick.from, pick.to);
 }
