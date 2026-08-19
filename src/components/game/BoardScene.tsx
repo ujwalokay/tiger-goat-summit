@@ -179,7 +179,7 @@ function Scene({ board, selected, targets, onNodeClick }: BoardSceneProps) {
 
 export default function BoardScene(props: BoardSceneProps) {
   return (
-    <Canvas shadows camera={{ position: [0, 8.6, 11.5], fov: 38 }} dpr={[1, 2]}>
+    <Canvas shadows camera={{ position: [0, 5.4, 12.5], fov: 42 }} dpr={[1, 2]}>
       <fog attach="fog" args={["#bcd9ef", 26, 55]} />
       <ambientLight intensity={0.55} />
       <hemisphereLight args={["#cfe8ff", "#4f7a35", 0.7]} />
@@ -203,8 +203,8 @@ export default function BoardScene(props: BoardSceneProps) {
       <Environment preset="park" />
       <OrbitControls
         enablePan={false}
-        minPolarAngle={0.25}
-        maxPolarAngle={Math.PI / 2.45}
+        minPolarAngle={0.35}
+        maxPolarAngle={Math.PI / 2.15}
         minDistance={7}
         maxDistance={22}
       />
