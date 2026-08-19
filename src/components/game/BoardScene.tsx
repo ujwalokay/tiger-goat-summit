@@ -47,41 +47,121 @@ function BoardLines() {
   );
 }
 
+/** Smoothly eases a piece to its node and adds a gentle idle bob when selected. */
+function PieceBase({
+  position,
+  selected,
+  children,
+}: {
+  position: [number, number, number];
+  selected: boolean;
+  children: React.ReactNode;
+}) {
+  const ref = useRef<THREE.Group>(null);
+  const target = useMemo(() => new THREE.Vector3(...position), [position]);
+  const started = useRef(false);
+
+  useFrame((state, dt) => {
+    const g = ref.current;
+    if (!g) return;
+    if (!started.current) {
+      g.position.copy(target);
+      g.position.y += 1.2;
+      g.scale.setScalar(0.4);
+      started.current = true;
+    }
+    const lift = selected ? 0.14 + Math.sin(state.clock.elapsedTime * 3) * 0.03 : 0;
+    const k = 1 - Math.pow(0.001, dt);
+    g.position.lerp(new THREE.Vector3(target.x, target.y + lift, target.z), k);
+    const s = selected ? 1.08 : 1;
+    g.scale.lerp(new THREE.Vector3(s, s, s), k);
+    g.rotation.y = THREE.MathUtils.lerp(g.rotation.y, selected ? 0.5 : 0, k * 0.6);
+  });
+
+  return <group ref={ref}>{children}</group>;
+}
+
 function Tiger({ position, selected }: { position: [number, number, number]; selected: boolean }) {
+  const body = selected ? "#fbbf24" : "#f97316";
+  const dark = selected ? "#b45309" : "#9a3412";
   return (
-    <group position={position}>
-      <mesh castShadow position={[0, 0.16, 0]}>
-        <cylinderGeometry args={[0.2, 0.26, 0.12, 6]} />
-        <meshStandardMaterial color={selected ? "#ffd166" : "#c2410c"} roughness={0.4} />
+    <PieceBase position={position} selected={selected}>
+      {/* haunches */}
+      <mesh castShadow position={[0, 0.13, 0]}>
+        <cylinderGeometry args={[0.21, 0.27, 0.14, 8]} />
+        <meshStandardMaterial color={dark} roughness={0.45} />
       </mesh>
-      <mesh castShadow position={[0, 0.34, 0]}>
-        <coneGeometry args={[0.19, 0.36, 6]} />
-        <meshStandardMaterial
-          color={selected ? "#fbbf24" : "#f97316"}
-          roughness={0.35}
-          metalness={0.1}
-        />
+      {/* body */}
+      <mesh castShadow position={[0, 0.33, 0]}>
+        <coneGeometry args={[0.2, 0.36, 8]} />
+        <meshStandardMaterial color={body} roughness={0.35} />
       </mesh>
-      <mesh castShadow position={[0, 0.56, 0]}>
-        <icosahedronGeometry args={[0.11, 0]} />
-        <meshStandardMaterial color="#7c2d12" roughness={0.5} />
+      {/* stripes */}
+      {[0.24, 0.32, 0.4].map((y, k) => (
+        <mesh key={k} position={[0, y, 0]}>
+          <torusGeometry args={[0.19 - k * 0.035, 0.011, 6, 16]} />
+          <meshStandardMaterial color={dark} roughness={0.6} />
+        </mesh>
+      ))}
+      {/* head */}
+      <mesh castShadow position={[0, 0.58, 0.02]}>
+        <icosahedronGeometry args={[0.125, 0]} />
+        <meshStandardMaterial color={body} roughness={0.4} />
       </mesh>
-    </group>
+      {/* ears */}
+      {[-0.08, 0.08].map((x) => (
+        <mesh key={x} castShadow position={[x, 0.68, 0]}>
+          <coneGeometry args={[0.045, 0.07, 4]} />
+          <meshStandardMaterial color={dark} roughness={0.5} />
+        </mesh>
+      ))}
+      {/* snout */}
+      <mesh position={[0, 0.55, 0.12]}>
+        <sphereGeometry args={[0.05, 8, 6]} />
+        <meshStandardMaterial color="#fde68a" roughness={0.5} />
+      </mesh>
+      {/* tail */}
+      <mesh castShadow position={[0, 0.3, -0.22]} rotation={[0.9, 0, 0]}>
+        <capsuleGeometry args={[0.028, 0.22, 3, 6]} />
+        <meshStandardMaterial color={dark} roughness={0.5} />
+      </mesh>
+    </PieceBase>
   );
 }
 
 function Goat({ position, selected }: { position: [number, number, number]; selected: boolean }) {
+  const coat = selected ? "#bef264" : "#f5f5f4";
+  const shade = selected ? "#a3e635" : "#d6d3d1";
   return (
-    <group position={position}>
-      <mesh castShadow position={[0, 0.1, 0]}>
-        <cylinderGeometry args={[0.18, 0.2, 0.08, 8]} />
-        <meshStandardMaterial color={selected ? "#a3e635" : "#d6d3d1"} roughness={0.6} />
+    <PieceBase position={position} selected={selected}>
+      {/* legs base */}
+      <mesh castShadow position={[0, 0.08, 0]}>
+        <cylinderGeometry args={[0.15, 0.19, 0.1, 8]} />
+        <meshStandardMaterial color={shade} roughness={0.7} />
       </mesh>
-      <mesh castShadow position={[0, 0.24, 0]}>
-        <dodecahedronGeometry args={[0.15, 0]} />
-        <meshStandardMaterial color={selected ? "#bef264" : "#f5f5f4"} roughness={0.5} />
+      {/* body */}
+      <mesh castShadow position={[0, 0.23, 0]}>
+        <dodecahedronGeometry args={[0.155, 0]} />
+        <meshStandardMaterial color={coat} roughness={0.55} />
       </mesh>
-    </group>
+      {/* head */}
+      <mesh castShadow position={[0, 0.4, 0.05]}>
+        <icosahedronGeometry args={[0.085, 0]} />
+        <meshStandardMaterial color={coat} roughness={0.5} />
+      </mesh>
+      {/* horns */}
+      {[-0.05, 0.05].map((x) => (
+        <mesh key={x} castShadow position={[x, 0.48, 0]} rotation={[-0.4, 0, x > 0 ? -0.3 : 0.3]}>
+          <coneGeometry args={[0.025, 0.1, 5]} />
+          <meshStandardMaterial color="#a8a29e" roughness={0.6} />
+        </mesh>
+      ))}
+      {/* beard */}
+      <mesh position={[0, 0.33, 0.09]}>
+        <coneGeometry args={[0.03, 0.07, 5]} />
+        <meshStandardMaterial color={shade} roughness={0.7} />
+      </mesh>
+    </PieceBase>
   );
 }
 
@@ -96,29 +176,60 @@ function Node({
 }) {
   const [hover, setHover] = useState(false);
   const pos = nodePosition(i);
+  const ring = useRef<THREE.Mesh>(null);
+
+  useFrame((state) => {
+    if (!ring.current) return;
+    const pulse = highlighted ? 1 + Math.sin(state.clock.elapsedTime * 3.4) * 0.08 : 1;
+    ring.current.scale.setScalar(pulse);
+  });
+
   return (
-    <mesh
-      position={[pos[0], 0.305, pos[2]]}
-      rotation={[-Math.PI / 2, 0, 0]}
-      onClick={(e) => {
-        e.stopPropagation();
-        onClick(i);
-      }}
-      onPointerOver={(e) => {
-        e.stopPropagation();
-        setHover(true);
-      }}
-      onPointerOut={() => setHover(false)}
-    >
-      <circleGeometry args={[highlighted ? 0.22 : 0.11, 24]} />
-      <meshStandardMaterial
-        color={highlighted ? (hover ? "#fde047" : "#84cc16") : "#3f2412"}
-        transparent
-        opacity={highlighted ? 0.9 : 1}
-      />
-    </mesh>
+    <group>
+      <mesh position={[pos[0], 0.303, pos[2]]} rotation={[-Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[0.075, 20]} />
+        <meshStandardMaterial color="#3f2412" roughness={0.9} />
+      </mesh>
+      <mesh
+        ref={ring}
+        position={[pos[0], 0.307, pos[2]]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        visible={highlighted}
+        onClick={(e) => {
+          e.stopPropagation();
+          onClick(i);
+        }}
+        onPointerOver={(e) => {
+          e.stopPropagation();
+          setHover(true);
+        }}
+        onPointerOut={() => setHover(false)}
+      >
+        <ringGeometry args={[0.13, 0.2, 28]} />
+        <meshStandardMaterial
+          color={hover ? "#fde047" : "#84cc16"}
+          emissive={hover ? "#facc15" : "#4d7c0f"}
+          emissiveIntensity={hover ? 0.7 : 0.3}
+          transparent
+          opacity={0.95}
+        />
+      </mesh>
+      {/* invisible click pad so empty nodes stay clickable */}
+      <mesh
+        position={[pos[0], 0.302, pos[2]]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        visible={false}
+        onClick={(e) => {
+          e.stopPropagation();
+          onClick(i);
+        }}
+      >
+        <circleGeometry args={[0.24, 12]} />
+      </mesh>
+    </group>
   );
 }
+
 
 export interface BoardSceneProps {
   board: Cell[];
