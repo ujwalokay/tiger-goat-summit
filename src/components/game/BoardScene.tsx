@@ -108,7 +108,7 @@ function Node({
       }}
       onPointerOut={() => setHover(false)}
     >
-      <circleGeometry args={highlighted ? 0.22 : 0.11, 24]} />
+      <circleGeometry args={[highlighted ? 0.22 : 0.11, 24]} />
       <meshStandardMaterial
         color={highlighted ? (hover ? "#fde047" : "#84cc16") : "#3f2412"}
         transparent
